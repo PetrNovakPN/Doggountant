@@ -1,0 +1,51 @@
+﻿@page "/counter"
+@using Doggountant.Data;
+@inject AccountingEntryTypeService AccountingEntryTypeService
+
+<h1>Přidání nové kategorie</h1>
+
+<table class="table">
+		<tbody>
+				<tr>
+					<td>
+						<MudTextField @bind-Value="TextValueType" Label="Kategorie" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+					</td>
+					<td>
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addType">Přidej</MudButton>
+					</td>
+				</tr>
+		</tbody>
+	</table>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Existující kategorie</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var type in types)
+			{
+				<tr>
+					<td>@type.Type</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	
+@code {
+	public string TextValueType { get; set; }
+	private List<AccountingEntryType> types = new List<AccountingEntryType>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		types = AccountingEntryTypeService.GetTypesAsync();
+	}
+
+	private async void addType()
+	{
+		await AccountingEntryTypeService.SaveTypesAsync(new AccountingEntryType
+		{
+			Type = TextValueType,
+		});
+	}
+}

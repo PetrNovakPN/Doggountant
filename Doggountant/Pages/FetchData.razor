@@ -1,0 +1,135 @@
+﻿@page "/fetchdata"
+
+@using Doggountant.Data
+@inject AccountingEntryService AccountingEntryService
+@inject AccountingEntryTypeService AccountingEntryTypeService
+
+<h1>Účetní zápisy</h1>
+
+@*<p>This component demonstrates fetching data from a service.</p>*@
+<MudRadioGroup @bind-SelectedOption="Dense_Radio">
+	<MudRadio Option="true" Color="Color.Primary" Dense="false">Přidat</MudRadio>
+	<MudRadio Option="false" Color="Color.Secondary" Dense="false">Vyhledat</MudRadio>
+</MudRadioGroup>
+<table class="table">
+		<tbody>
+			@if(Dense_Radio){
+			<tr>
+				<td>
+					<MudNumericField HideSpinButtons="true" @bind-Value="Amount" Label="Suma" Variant="Variant.Text" />
+				</td>
+				<td>
+					<MudSelect Margin="Margin.Dense" T="string" Label="Kategorie" Variant="Variant.Text" @bind-value="SelectedValueType">
+						@foreach (var type in types)
+						{
+							<MudSelectItem T="string" Value=@type.Type>@type.Type</MudSelectItem>
+						}
+					</MudSelect>
+				</td>
+				<td>
+					<MudTextField @bind-Value="TextValueNote" Label="Poznámka" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+				</td>
+				<td>
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addEntry">Save</MudButton>
+				</td>
+			</tr>
+			}else{
+				<tr>
+					<td>
+						<MudSelect Margin="Margin.Dense" T="string" Label="Kategorie" Variant="Variant.Text" @bind-value="SelectedValueTypeSearch">
+							@foreach (var type in types)
+							{
+								<MudSelectItem T="string" Value=@type.Type>@type.Type</MudSelectItem>
+							}
+						</MudSelect>
+					</td>
+					<td>
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="resetEntries">Reset</MudButton>
+					</td>
+				</tr>
+			}
+				
+		</tbody>
+	</table>
+
+@if (entries == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Datum</th>
+				<th>Suma</th>
+				<th>Kategorie</th>
+				<th>Poznámka</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (SelectedValueTypeSearch!=null)
+			{
+				@foreach (var entry in entries)
+				{
+					@if (entry.Type == SelectedValueTypeSearch)
+					{
+						<tr>
+							<td>@entry.Date.ToShortDateString()</td>
+							<td>@entry.Value</td>
+							<td>@entry.Type</td>
+							<td>@entry.Note</td>
+						</tr>
+					}
+				}
+			}
+			else
+			{
+				@foreach (var entry in entries)
+				{
+					<tr>
+						<td>@entry.Date.ToShortDateString()</td>
+						<td>@entry.Value</td>
+						<td>@entry.Type</td>
+						<td>@entry.Note</td>
+					</tr>
+				}
+			}
+
+		</tbody>
+	</table>
+}
+
+@code {
+	public bool Dense_Radio { get; set; } = false;
+	public int Amount { get; set; }
+	public string TextValueNote { get; set; }
+	public string SelectedValueType { get; set; } = "Jídlo";
+	public string SelectedValueTypeSearch { get; set; } = "Jídlo";
+	private List<AccountingEntry> entries = new List<AccountingEntry>();
+	private AccountingEntry[] tempEntries;
+	private List<AccountingEntryType> types = new List<AccountingEntryType>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		tempEntries = await AccountingEntryService.GetEntryAsync(DateTime.Now);
+		entries = tempEntries.Reverse().ToList();
+		types = AccountingEntryTypeService.GetTypesAsync();
+	}
+
+	private void resetEntries()
+	{
+		SelectedValueTypeSearch = null;
+	}
+	private void addEntry()
+	{
+		entries.Add(new AccountingEntry
+		{
+			Date = DateTime.Now,
+			Value = Amount,
+			Type = SelectedValueType,
+			Note = TextValueNote
+		});
+
+	}
+}
