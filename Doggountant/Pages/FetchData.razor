@@ -6,7 +6,6 @@
 
 <h1>Účetní zápisy</h1>
 
-@*<p>This component demonstrates fetching data from a service.</p>*@
 <MudRadioGroup @bind-SelectedOption="Dense_Radio">
 	<MudRadio Option="true" Color="Color.Primary" Dense="false">Přidat</MudRadio>
 	<MudRadio Option="false" Color="Color.Secondary" Dense="false">Vyhledat</MudRadio>
@@ -107,13 +106,11 @@ else
 	public string SelectedValueType { get; set; } = "Jídlo";
 	public string SelectedValueTypeSearch { get; set; } = "Jídlo";
 	private List<AccountingEntry> entries = new List<AccountingEntry>();
-	private AccountingEntry[] tempEntries;
 	private List<AccountingEntryType> types = new List<AccountingEntryType>();
 
 	protected override async Task OnInitializedAsync()
 	{
-		tempEntries = await AccountingEntryService.GetEntryAsync(DateTime.Now);
-		entries = tempEntries.Reverse().ToList();
+		entries = AccountingEntryService.GetEntryAsync();
 		types = AccountingEntryTypeService.GetTypesAsync();
 	}
 
@@ -121,15 +118,15 @@ else
 	{
 		SelectedValueTypeSearch = null;
 	}
-	private void addEntry()
-	{
-		entries.Add(new AccountingEntry
-		{
-			Date = DateTime.Now,
-			Value = Amount,
-			Type = SelectedValueType,
-			Note = TextValueNote
-		});
 
+	private async void addEntry()
+	{
+		await AccountingEntryService.SaveEntriesAsync(new AccountingEntry
+			{
+				Date = DateTime.Now,
+				Value = Amount,
+				Type = SelectedValueType,
+				Note = TextValueNote
+			});
 	}
 }
