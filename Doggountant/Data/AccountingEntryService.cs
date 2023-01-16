@@ -1,3 +1,7 @@
+using Microsoft.Maui.Storage;
+using System.Linq;
+using System.Text.Json;
+
 namespace Doggountant.Data;
 
 public class AccountingEntryService
@@ -7,15 +11,47 @@ public class AccountingEntryService
 		"Jídlo", "Auto", "Pití", "RockNroll"
 	};
 
-	public Task<AccountingEntry[]> GetEntryAsync(DateTime startDate)
+	List<AccountingEntry> Entries = new List<AccountingEntry>() { new AccountingEntry
+			{
+				Date = DateTime.Now,
+				Value = 69,
+				Type = "Jídlo",
+				Note = "temp"
+			}
+		};
+	string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data\\Saves\\entries.txt");
+
+	public List<AccountingEntry> GetEntryAsync()
 	{
-		return Task.FromResult(Enumerable.Range(1, 50).Select(index => new AccountingEntry
-        {
-			Date = startDate.AddDays(index),
-			Value = Random.Shared.Next(-155, 400),
-			Type = Types[Random.Shared.Next(Types.Length)],
-			Note = "temp"
-		}).ToArray());
+		string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data\\Saves\\entries.txt");
+		if (!File.Exists(filePath))
+		{
+			File.Create(filePath);
+		}
+		if (new FileInfo(filePath).Length != 0)
+		{
+			Entries.Clear();
+			ReadFromFile();
+		}
+		return Entries;
+	}
+
+	public async Task SaveEntriesAsync(AccountingEntry tempEntry)
+	{
+		Entries.Add(tempEntry);
+		SaveIntoFile(Entries);
+	}
+	private void ReadFromFile()
+	{
+		string json = File.ReadAllText(filePath);
+		Entries = JsonSerializer.Deserialize<List<AccountingEntry>>(json);
+	}
+
+	private void SaveIntoFile(List<AccountingEntry> tempEntries)
+	{
+		string json = JsonSerializer.Serialize(tempEntries);
+		File.WriteAllText(filePath, json);
 	}
 }
+
 
