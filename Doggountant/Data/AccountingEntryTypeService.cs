@@ -9,7 +9,7 @@ namespace Doggountant.Data
 		List<AccountingEntryType> Types = new List<AccountingEntryType>() { new AccountingEntryType
 			{
 				Type = "Jídlo",
-			} 
+			}
 		};
 		string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data\\Saves\\types.txt");
 
@@ -27,22 +27,28 @@ namespace Doggountant.Data
 			}
 			return Types;
 		}
-		
-		public async Task SaveTypesAsync(AccountingEntryType tempType)
+
+		public async Task AddTypeAsync(AccountingEntryType tempType)
 		{
 			Types.Add(tempType);
 			SaveIntoFile(Types);
 		}
-		private void  ReadFromFile()
+
+		public async Task RemoveTypeAsync(AccountingEntryType tempType)
+		{
+			Types.Remove(Types.FirstOrDefault(e => e.Type == tempType.Type));
+			SaveIntoFile(Types);
+		}
+		private void ReadFromFile()
 		{
 			string json = File.ReadAllText(filePath);
 			Types = JsonSerializer.Deserialize<List<AccountingEntryType>>(json);
 		}
 
 		private void SaveIntoFile(List<AccountingEntryType> TempTypes)
-			{
-				string json = JsonSerializer.Serialize(TempTypes);
-				File.WriteAllText(filePath, json);
-			}
+		{
+			string json = JsonSerializer.Serialize(TempTypes);
+			File.WriteAllText(filePath, json);
 		}
+	}
 }

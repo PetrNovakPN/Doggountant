@@ -4,35 +4,50 @@
 
 <h1>Přidání nové kategorie</h1>
 
+<MudRadioGroup @bind-SelectedOption="Dense_Radio">
+	<MudRadio Option="true" Color="Color.Primary" Dense="false">Přidat</MudRadio>
+	<MudRadio Option="false" Color="Color.Secondary" Dense="false">Odebrat</MudRadio>
+</MudRadioGroup>
 <table class="table">
-		<tbody>
-				<tr>
-					<td>
-						<MudTextField @bind-Value="TextValueType" Label="Kategorie" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-					</td>
-					<td>
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addType">Přidej</MudButton>
-					</td>
-				</tr>
-		</tbody>
-	</table>
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Existující kategorie</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var type in types)
+	<tbody>
+		<tr>
+			<td>
+				<MudTextField @bind-Value="TextValueType" Label="Kategorie" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+			</td>
+			@if (Dense_Radio)
 			{
-				<tr>
-					<td>@type.Type</td>
-				</tr>
+				<td>
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addType">Save</MudButton>
+				</td>
 			}
-		</tbody>
-	</table>
-	
+			else
+			{
+				<td>
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Error" Size="Size.Large" OnClick="removeType">Remove</MudButton>
+				</td>
+			}
+		</tr>
+	</tbody>
+</table>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Existující kategorie</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var type in types)
+		{
+			<tr>
+				<td>@type.Type</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
 @code {
+	public bool Dense_Radio { get; set; } = true;
 	public string TextValueType { get; set; }
 	private List<AccountingEntryType> types = new List<AccountingEntryType>();
 
@@ -43,9 +58,16 @@
 
 	private async void addType()
 	{
-		await AccountingEntryTypeService.SaveTypesAsync(new AccountingEntryType
-		{
-			Type = TextValueType,
-		});
+		await AccountingEntryTypeService.AddTypeAsync(new AccountingEntryType
+			{
+				Type = TextValueType,
+			});
+	}
+	private async void removeType()
+	{
+		await AccountingEntryTypeService.RemoveTypeAsync(new AccountingEntryType
+			{
+				Type = TextValueType,
+			});
 	}
 }
