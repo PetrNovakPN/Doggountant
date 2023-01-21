@@ -12,13 +12,14 @@ public class AccountingEntryService
 	};
 
 	List<AccountingEntry> Entries = new List<AccountingEntry>() { new AccountingEntry
-			{
-				Date = DateTime.Now,
-				Value = 69,
-				Type = "Jídlo",
-				Note = "temp"
-			}
-		};
+		{
+			Date = DateTime.Now,
+			Value = 69,
+			Type = "Jídlo",
+			Note = "temp"
+		}
+	};
+
 	string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data\\Saves\\entries.txt");
 
 	public List<AccountingEntry> GetEntryAsync()
@@ -36,11 +37,20 @@ public class AccountingEntryService
 		return Entries;
 	}
 
-	public async Task SaveEntriesAsync(AccountingEntry tempEntry)
+	public async Task AddEntryAsync(AccountingEntry tempEntry)
 	{
 		Entries.Add(tempEntry);
 		SaveIntoFile(Entries);
 	}
+
+	public async Task RemoveEntryAsync(AccountingEntry tempEntry)
+	{
+		AccountingEntry entryToRemove = Entries.FirstOrDefault(e => e.Date.Date == tempEntry.Date.Date && e.Note == tempEntry.Note && e.Value == tempEntry.Value && e.Type == tempEntry.Type);
+		if (entryToRemove != null)
+			Entries.Remove(entryToRemove);
+		SaveIntoFile(Entries);
+	}
+
 	private void ReadFromFile()
 	{
 		string json = File.ReadAllText(filePath);
