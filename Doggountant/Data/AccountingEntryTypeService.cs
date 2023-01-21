@@ -28,15 +28,9 @@ namespace Doggountant.Data
 			return Types;
 		}
 		
-		public async Task AddTypeAsync(AccountingEntryType tempType)
+		public async Task SaveTypesAsync(AccountingEntryType tempType)
 		{
 			Types.Add(tempType);
-			SaveIntoFile(Types);
-		}
-
-		public async Task RemoveTypeAsync(AccountingEntryType tempType)
-		{
-			Types.Remove(Types.FirstOrDefault(e => e.Type == tempType.Type));
 			SaveIntoFile(Types);
 		}
 		private void  ReadFromFile()
