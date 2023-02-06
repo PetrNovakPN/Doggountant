@@ -11,12 +11,14 @@ public class AccountingEntry
 
 	public string Note { get; set; }
 
-	public AccountingEntry()
+    public bool EntryType { get; set; } //false = výdìj, true = pøíjem
+
+    public AccountingEntry()
 	{
 		Value = 0;
 		Type = "Jídlo";
 		Date = DateTime.MinValue;
 		Note = "temp";
+        EntryType = false;
 	}
-
 }

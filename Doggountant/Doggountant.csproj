@@ -49,15 +49,38 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AndroidResource Remove="wwwroot\js\**" />
+      <Compile Remove="wwwroot\js\**" />
+      <Content Remove="wwwroot\js\**" />
+      <EmbeddedResource Remove="wwwroot\js\**" />
+      <None Remove="wwwroot\js\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Shared\Image.razor" />
+      <Content Remove="wwwroot\Images\cena.gif" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiImage Remove="wwwroot\Images\cena.gif" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Shared\PopupWindow.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Include="Data\Saves\types.txt" />
     </ItemGroup>
 
     <ItemGroup>
+      <None Include="wwwroot\Images\giphy.gif" />
       <None Include="wwwroot\Images\doggountant.png" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MudBlazor" Version="6.1.6" />
+      <PackageReference Include="Sentry.Maui" Version="3.27.0" />
     </ItemGroup>
 
 </Project>

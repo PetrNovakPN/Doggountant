@@ -16,8 +16,9 @@ public class AccountingEntryService
 			Date = DateTime.Now,
 			Value = 69,
 			Type = "Jídlo",
-			Note = "temp"
-		}
+			Note = "temp",
+            EntryType = false
+}
 	};
 
 	string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data\\Saves\\entries.txt");
@@ -45,7 +46,7 @@ public class AccountingEntryService
 
 	public async Task RemoveEntryAsync(AccountingEntry tempEntry)
 	{
-		AccountingEntry entryToRemove = Entries.FirstOrDefault(e => e.Date.Date == tempEntry.Date.Date && e.Note == tempEntry.Note && e.Value == tempEntry.Value && e.Type == tempEntry.Type);
+		AccountingEntry entryToRemove = Entries.FirstOrDefault(e => e.Date.Date == tempEntry.Date.Date && e.Note == tempEntry.Note && e.Value == tempEntry.Value && e.Type == tempEntry.Type && e.EntryType == tempEntry.EntryType);
 		if (entryToRemove != null)
 			Entries.Remove(entryToRemove);
 		SaveIntoFile(Entries);

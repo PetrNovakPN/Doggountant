@@ -1,10 +1,16 @@
 ﻿@page "/"
 
+@using Doggountant.Data;
+
+@inject AccountingEntryService AccountingEntryService
+@inject AccountingEntryTypeService AccountingEntryTypeService
+
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
 <MudCard>
     <MudCardMedia Image="_content/MudBlazor.Docs/images/content-template-door.png" Height="200" />
     <MudCardContent>
@@ -13,3 +19,50 @@ Welcome to your new app.
         <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
     </MudCardContent>
 </MudCard>
+
+<MudPaper Class="pa-4">
+    <div style="display: inline-block left: 50%">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Výdej</MudText>
+        <MudChart ChartType="ChartType.Pie" InputData="@dataExpense" @bind-SelectedIndex="index" InputLabels="@labels" Width="40%" Height="40%" />
+    </div>
+    <div style="display: inline-block left: 50%">
+        <MudText Typo="Typo.h4" Align="Align.Center"GutterBottom="true">Příjem</MudText>
+        <MudChart ChartType="ChartType.Pie" InputData="@dataIncome" @bind-SelectedIndex="index" InputLabels="@labels" Width="40%" Height="40%" />
+    </div>
+</MudPaper>
+
+@code {
+    private int index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    int dataSize = 2;
+    double[] dataIncome= { 77, 25 };
+    double[] dataExpense = { 77, 25 };
+    string[] labels;
+
+
+
+
+    Random random = new Random();
+
+    private static List<AccountingEntry> entries = new List<AccountingEntry>();
+    private static List<AccountingEntryType> types = new List<AccountingEntryType>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        entries = AccountingEntryService.GetEntryAsync();
+        types = AccountingEntryTypeService.GetTypesAsync();
+
+        //rozdělit labels
+        labels = types.Select(e => e.Type).ToArray();
+        
+        dataIncome = entries.Where(e => e.EntryType == true)
+                    .GroupBy(e => e.Type)
+                    .Select(g => g.Sum(e => Convert.ToDouble(e.Value)))
+                    .ToArray();
+        dataExpense = entries.Where(e => e.EntryType == false)
+                    .GroupBy(e => e.Type)
+                    .Select(g => g.Sum(e => Convert.ToDouble(e.Value)))
+                    .ToArray();
+
+    }
+}

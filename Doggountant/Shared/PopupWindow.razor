@@ -1,0 +1,39 @@
+﻿@using Doggountant.Data;
+
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField Value="@entry.Date" Label="Datum" ReadOnly="true" />
+        <MudTextField Value="@(entry.EntryType == false ? "Výdej" : "Příjem")" Label="Druh" ReadOnly="true" />
+        <MudTextField Value="@entry.Value" Label="Suma" ReadOnly="true" />
+        <MudTextField Value="@entry.Type" Label="Kategorie" ReadOnly="true" />
+        <MudTextField Value="@entry.Note" Label="Poznámka" ReadOnly="true" Lines="2"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton @onclick="DeleteUser" Variant="Variant.Filled" Color="Color.Error">Odstranit</MudButton>
+        <MudButton OnClick="Cancel">Zavřít</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    private bool Loading = false;
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+
+    [Parameter] public AccountingEntry entry { get; set; } = new AccountingEntry();
+
+    private void DeleteUser()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Do you really want to delete these records? This process cannot be undone.");
+        parameters.Add("ButtonText", "Delete");
+        parameters.Add("Color", Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        DialogService.Show<PopupDelete>("Delete", parameters, options);
+    }
+}
