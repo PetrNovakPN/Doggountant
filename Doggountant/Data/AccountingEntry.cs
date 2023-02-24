@@ -11,7 +11,7 @@ public class AccountingEntry
 
 	public string Note { get; set; }
 
-    public bool EntryType { get; set; } //false = vıdìj, true = pøíjem
+    public bool EntryType { get; set; } //false = vıdej, true = pøíjem
 
     public AccountingEntry()
 	{

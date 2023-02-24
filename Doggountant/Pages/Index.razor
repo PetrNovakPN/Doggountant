@@ -1,7 +1,7 @@
 ﻿@page "/"
 
 @using Doggountant.Data;
-
+@using Doggountant.Shared;
 @inject AccountingEntryService AccountingEntryService
 @inject AccountingEntryTypeService AccountingEntryTypeService
 
@@ -48,7 +48,6 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-
         entries = AccountingEntryService.GetEntryAsync();
         types = AccountingEntryTypeService.GetTypesAsync();
 

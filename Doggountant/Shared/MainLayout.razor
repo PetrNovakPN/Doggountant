@@ -5,16 +5,24 @@
 		<NavMenu />
 		<MudDialogProvider />
 		<MudSnackbarProvider />
-		<MudThemeProvider />
 	</div>
 
 	<main>
-		<div class="top-row px-4">
+		@*<div class="top-row px-4">
 			<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-		</div>
+		</div>*@
 
 		<article class="content px-4">
-			@Body
+			<ErrorBoundary>
+				<ChildContent>
+					@Body
+				</ChildContent>
+				<ErrorContent Context="Exception">
+					@Exception.GetType()
+					@Exception.Message
+				</ErrorContent>
+			</ErrorBoundary>
+			
 		</article>
 	</main>
 </div>

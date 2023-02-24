@@ -1,53 +1,77 @@
 ﻿@page "/categories"
 @using Doggountant.Data;
 @inject AccountingEntryTypeService AccountingEntryTypeService
+@inject IDialogService DialogService
 
 <h1>Přidání nové kategorie</h1>
 
-<MudRadioGroup @bind-SelectedOption="Dense_Radio">
-	<MudRadio Option="true" Color="Color.Primary" Dense="false">Přidat</MudRadio>
-	<MudRadio Option="false" Color="Color.Secondary" Dense="false">Odebrat</MudRadio>
-</MudRadioGroup>
-<table class="table">
-	<tbody>
-		<tr>
-			<td>
-				<MudTextField @bind-Value="TextValueType" Label="Kategorie" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-			</td>
-			@if (Dense_Radio)
-			{
-				<td>
+<MudStack>
+	<MudStack>
+		<MudStack Row="true">
+			<MudPaper Class="pa-3" Elevation="0" Width="65%">
+				<MudStack Row="true">
+					<MudTextField @bind-Value="TextValueType" Label="Kategorie" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addType">Save</MudButton>
-				</td>
-			}
-			else
-			{
-				<td>
-					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Error" Size="Size.Large" OnClick="removeType">Remove</MudButton>
-				</td>
-			}
-		</tr>
-	</tbody>
-</table>
-
-<table class="table">
-	<thead>
-		<tr>
-			<th>Existující kategorie</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var type in types)
-		{
-			<tr>
-				<td>@type.Type</td>
-			</tr>
-		}
-	</tbody>
-</table>
+				</MudStack>
+			</MudPaper>		
+		</MudStack>
+	</MudStack>
+	<MudTable Breakpoint="Breakpoint.None" Items="@types" Dense="true" Filter="new Func<AccountingEntryType,bool>(FilterFunc1)" T="AccountingEntryType" OnRowClick="@OpenDialog" Hover="true" @bind-SelectedItem="selectedItem1">
+		<ToolBarContent>
+			<MudText Typo="Typo.h6">Kategorie</MudText>
+			<MudSpacer />
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+			<MudTh>Kategorie</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd DataLabel="Kategorie">@context.Type</MudTd>
+		</RowTemplate>
+		<PagerContent>
+				<MudTablePager />
+		</PagerContent>
+	</MudTable>
+</MudStack>
 
 @code {
-	public bool Dense_Radio { get; set; } = true;
+	//test
+
+	//working
+	private string searchString1 = "";
+	private AccountingEntryType selectedItem1 = null;
+
+	private bool FilterFunc1(AccountingEntryType element) => FilterFunc(element, searchString1);
+
+
+	async void OpenDialog(TableRowClickEventArgs<AccountingEntryType> args)
+	{
+		var parameters = new DialogParameters();
+		parameters.Add("ContentText", $"Vážně chceš odstranit Kategorii: {args.Item.Type}");
+		parameters.Add("ButtonText", "Odstranit");
+		parameters.Add("Color", Color.Error);
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+		var dialog = await DialogService.ShowAsync<PopupDelete>("Odstranění kategorie", parameters, options);
+		var result = await dialog.Result;
+		if (!result.Cancelled)
+		{
+			await AccountingEntryTypeService.RemoveTypeAsync(args.Item);
+			StateHasChanged();
+		}
+
+	}
+
+	private bool FilterFunc(AccountingEntryType element, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (element.Type.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if ($"{element.Type} ".Contains(searchString))
+			return true;
+		return false;
+	}
+	
 	public string TextValueType { get; set; }
 	private List<AccountingEntryType> types = new List<AccountingEntryType>();
 

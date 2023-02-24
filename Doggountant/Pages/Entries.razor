@@ -18,13 +18,13 @@
 	</MudItem>
 	<MudItem>
 		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Primary" Size="Size.Large" OnClick="addEntry">Save</MudButton>
-		@*<MudThemeProvider @bind-IsDarkMode="@Dense_Radio" Theme="_theme" />
-		<MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />*@
 	</MudItem>
 </MudGrid>
 
 
-
+@*<MudPaper Class="pa-3">
+				Item 2
+			</MudPaper>*@
 
 
 @if (entries == null)
@@ -33,156 +33,171 @@
 }
 else
 {
-	@*<table class="table">
-		<thead>
-			<tr>
-				<th>Datum</th>
-				<th>Druh</th>
-				<th>Suma</th>
-				<th>Kategorie</th>
-				<th>Poznámka</th>
-			</tr>
-		</thead>
-		<tbody>
-			@if (SelectedValueTypeSearch != null)
-			{
-				@foreach (var entry in entries)
+<MudStack Spacing="1">
+	<MudStack Spacing="0">
+		<MudStack Row="true">
+				<MudPaper Class="pa-3" Elevation="0" Width="40%">
+				<MudDatePicker Label="dd.MM.yyyy" Editable="true" @bind-Date="SelectedDate" Mask="@(new DateMask("dd.MM.yyyy"))" DateFormat="dd.MM.yyyy" Placeholder="Datum" />
+			</MudPaper>
+			<MudPaper Class="pa-3" Elevation="0" Width="60%">
+				<MudNumericField HideSpinButtons="true" @bind-Value="Amount" Label="Suma" Variant="Variant.Text" />
+			</MudPaper>			
+		</MudStack>
+		<MudStack Row="true">
+			<MudPaper Class="pa-3" Elevation="0" Width="40%">
+				<MudSelect Margin="Margin.Dense" T="string" Label="Kategorie" FullWidth=true Variant="Variant.Text" @bind-value="SelectedValueType">
+				@foreach (var type in types)
 				{
-					@if (entry.Type == SelectedValueTypeSearch)
-					{
-						<tr @onclick="@(() => OpenDialog(entry))">
-							<td>@entry.Date.ToShortDateString()</td>
-							<td>@(entry.EntryType == false ? "Výdej" : "Příjem")</td>
-							<td>@entry.Value</td>
-							<td>@entry.Type</td>
-							<td>@(entry.Note.Length <= 14 ? entry.Note : entry.Note.Substring(0, 14) + "...")</td>
-						</tr>
-					}
+					<MudSelectItem T="string" Value=@type.Type />
 				}
-			}
-			else
-			{
-				@foreach (var entry in entries)
-				{
-					<tr @onclick="@(() => OpenDialog(entry))">
-						<td>@entry.Date.ToShortDateString()</td>
-						<td>@(entry.EntryType == false ? "Výdej" : "Příjem")</td>
-						<td>@entry.Value</td>
-						<td>@entry.Type</td>
-						<td>@(entry.Note.Length <= 14 ? entry.Note : entry.Note.Substring(0, 14) + "...")</td>
-					</tr>
-				}
-			}
+				</MudSelect>
+			</MudPaper>
 
-		</tbody>
-	</table>*@
-
-	<table class="table">
-		<tbody>
-			<tr>
-				<td>
-					<MudDatePicker Label="dd.MM.yyyy" Editable="true" @bind-Date="SelectedDate" Mask="@(new DateMask("dd.MM.yyyy"))" DateFormat="dd.MM.yyyy" Placeholder="Datum" />
-				</td>
-				<td>
-					<MudNumericField HideSpinButtons="true" @bind-Value="Amount" Label="Suma" Variant="Variant.Text" />
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<MudSelect Margin="Margin.Dense" T="string" Label="Kategorie" FullWidth=true Variant="Variant.Text" @bind-value="SelectedValueType">
-						@foreach (var type in types)
-						{
-							<MudSelectItem T="string" Value=@type.Type />
-						}
-					</MudSelect>
-				</td>
-				<td>
-					<MudTextField @bind-Value="TextValueNote" Label="Poznámka" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-				</td>
-
-				@*<td>
-			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Error" Size="Size.Large" OnClick="removeEntry">Remove</MudButton>
-			</td>*@
-			</tr>
-
-			<tr>
-				<td>
-					<MudSelect Margin="Margin.Dense" T="string" Label="Filtr" Variant="Variant.Text" @bind-value="SelectedValueTypeSearch">
-						@foreach (var type in types)
-						{
-							<MudSelectItem T="string" Value=@type.Type />
-						}
-					</MudSelect>
-				</td>
-				<td>
-					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Sync" IconColor="Color.Primary" Size="Size.Large" OnClick="resetEntries">Reset</MudButton>
-				</td>
-			</tr>
-
-		</tbody>
-	</table>
-	//RowStyleFunc="RowStyleFunc"
-	<MudTable Items="@entries" Dense="true" Filter="new Func<AccountingEntry,bool>(FilterFunc1)"  T="AccountingEntry" OnRowClick="@OpenDialog" Hover="true" @bind-SelectedItem="selectedItem1">
+			<MudPaper Class="pa-3" Elevation="0" Width="60%">
+				<MudTextField @bind-Value="TextValueNote" Label="Poznámka" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+			</MudPaper>
+			
+		</MudStack>
+	</MudStack>
+	@*RowStyleFunc="RowStyleFunc"*@
+	<MudTable Breakpoint="Breakpoint.None" Items="@entries" Dense="true" Filter="new Func<AccountingEntry,bool>(FilterFunc1)"  T="AccountingEntry" OnRowClick="@OpenDialog" Hover="true" @bind-SelectedItem="selectedItem1" >
 		<ToolBarContent>
-			<MudText Typo="Typo.h6">Výpisy</MudText>
+			<MudText Typo="Typo.h6">Výpisy	
+			</MudText>
+				
 			<MudSpacer />
-			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				@*<MudSelect T="EntryType" ToStringFunc="@converter" Label="Druh" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Text" Clearable>
+					<MudSelectItem Value="@(new EntryType() { entryType="Příjem"})" />
+					<MudSelectItem Value="@(new EntryType() { entryType="Výdej"})" />
+				</MudSelect>*@
+				
+			   <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 		</ToolBarContent>
+
 		<HeaderContent>
-			<MudTh>Datum</MudTh>
-			<MudTh>Druh</MudTh>
-			<MudTh>Suma</MudTh>
-			<MudTh>Kategorie</MudTh>
-			<MudTh>Poznámka</MudTh>
+				<MudTh>Datum</MudTh>
+				<MudTh @onclick="@(() => TypeFilter())" Class="pa-1">
+					Druh
+					@if (currentTypeSelection == 1)
+					{
+						<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Small" Color="Color.Success" />
+					}
+					else if (currentTypeSelection == 2)
+					{
+						<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Small" Color="Color.Error" />
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.FilterListOff" Size="Size.Small" />
+						
+					}
+				</MudTh>
+				<MudTh >Suma</MudTh>
+				<MudTh >Kategorie</MudTh>
+				<MudTh >Poznámka</MudTh>
 		</HeaderContent>
 		<RowTemplate>
 			<MudTd DataLabel="Datum">@context.Date.ToShortDateString()</MudTd>
-			<MudTd DataLabel="Druh">
-				<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="@(context.EntryType == false ? Color.Error : Color.Success)" />
+				<MudTd DataLabel="Druh" Class="pa-1">
+				<MudIcon style="" Icon="@Icons.Material.Filled.AttachMoney" Color="@(context.EntryType == false ? @Color.Error : @Color.Success)"/>
 			</MudTd>
-			<MudTd DataLabel="Suma">@context.Value</MudTd>
+				@if(context.EntryType){
+					<MudTd Style="@($"color:{Theme.Palette.Success};")" DataLabel="Suma">@context.Value</MudTd>	
+				}
+				else{
+					<MudTd Style="@($"color:{Theme.Palette.ErrorLighten};")" DataLabel="Suma">-@context.Value</MudTd>
+				}
+				
 			<MudTd DataLabel="Kategorie">@context.Type</MudTd>
-			<MudTd DataLabel="Poznámka">@(context.Note.Length <= 14 ? context.Note : context.Note.Substring(0, 14) + "...")</MudTd>
+			<MudTd DataLabel="Poznámka">@(context.Note != null ? (context.Note.Length <= 8 ? context.Note : context.Note.Substring(0, 8) + "...") : "")</MudTd>
 		</RowTemplate>
 		<PagerContent>
 			<MudTablePager />
 		</PagerContent>
 	</MudTable>
+</MudStack>
 }
 
 @code {
 	//test
+	private MudTheme Theme = new MudTheme();
+	Func<EntryType, string> converter = p => p?.entryType;
 	private string searchString1 = "";
 	private AccountingEntry selectedItem1 = null;
 
 	private bool FilterFunc1(AccountingEntry element) => FilterFunc(element, searchString1);
 
-	//dodělat vyhledávání
-	private bool FilterFunc(AccountingEntry element, string searchString)
+	private int currentTypeSelection = 0;
+	public void TypeFilter()
 	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (element.Type.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (element.Note.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if ($"{element.Date} {element.EntryType} {element.Value} {element.Type} {element.Note}".Contains(searchString))
-			return true;
-		return false;
-	}
-
-	private string RowStyleFunc(AccountingEntry element, int index)
-	{
-		switch (element.EntryType)
+		if (currentTypeSelection == 0 ||currentTypeSelection > 2)
 		{
-			case false:
-				return "background-color:#F8BBD0";
-			case true:
-				return "background-color:#29B6F6";
-			default: return "background-color:white";
-
+			currentTypeSelection++;
+		}
+		else if (currentTypeSelection == 1)
+		{
+			currentTypeSelection++;
+		}
+		else if (currentTypeSelection == 2)
+		{
+			currentTypeSelection = 0;
 		}
 	}
+
+	public class EntryType
+	{
+		public string entryType { get; set; }
+
+		// Note: this is important so the select can compare pizzas
+		public override bool Equals(object o)
+		{
+			var other = o as EntryType;
+			return other?.entryType == entryType;
+		}
+
+		// Note: this is important so the select can compare pizzas
+		public override int GetHashCode() => entryType.GetHashCode();
+	}
+
+	
+	private bool FilterFunc(AccountingEntry element, string searchString)
+	{
+		if(currentTypeSelection == 1)
+		{
+			if(element.EntryType == false)
+			{
+				return false;
+			}
+		}
+		else if(currentTypeSelection == 2)
+		{
+			if (element.EntryType == true)
+			{
+				return false;
+			}
+		}
+
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (element.EntryType == true)
+		{
+			if ("Příjem".ToUpper() == searchString.ToUpper())
+				return true;
+		}
+		else
+		{
+			if ("Výdej".ToUpper() == searchString.ToUpper())
+				return true;
+		}
+		if (element.Date.Date.ToString().Substring(0,10) == searchString)
+			return true;
+		
+		if ($"{element.Value.ToString().ToUpper()} {element.Type.ToString().ToUpper()} {element.Note.ToUpper()} ".Contains(searchString.ToUpper()))
+			return true;
+
+		return false;
+	}
+	
 
 	//working
 	DateTime? SelectedDate = DateTime.Today;
@@ -194,8 +209,7 @@ else
 	private List<AccountingEntry> entries = new List<AccountingEntry>();
 	private List<AccountingEntryType> types = new List<AccountingEntryType>();
 
-	private MudTheme _theme = new();
-	private bool _isDarkMode;
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -214,8 +228,8 @@ else
 			{
 				Date = SelectedDate ?? DateTime.Now,
 				Value = Amount,
-				Type = SelectedValueType,
-				Note = TextValueNote,
+				Type = SelectedValueType ?? "None",
+				Note = TextValueNote ?? "",
 				EntryType = Dense_Radio
 			});
 	}
@@ -226,16 +240,29 @@ else
 			{
 				Date = SelectedDate ?? DateTime.Now,
 				Value = Amount,
-				Type = SelectedValueType,
-				Note = TextValueNote,
+				Type = SelectedValueType ?? "None",
+				Note = TextValueNote ?? "",
 				EntryType = Dense_Radio
 			});
 	}
 
-	void OpenDialog(TableRowClickEventArgs<AccountingEntry> args)
+	async void OpenDialog(TableRowClickEventArgs<AccountingEntry> args)
 	{
 		var parameters = new DialogParameters { ["entry"] = args.Item };
-		DialogService.Show<PopupWindow>("Simple Dialog", parameters);
+		var dialog = await DialogService.ShowAsync<PopupWindow>("Zápis", parameters);
+		var result = await dialog.Result;
+		if (!result.Cancelled)
+		{
+			await AccountingEntryService.RemoveEntryAsync(args.Item);
+			StateHasChanged();
+		}
+
 	}
+	//void OpenDialog(TableRowClickEventArgs<AccountingEntry> args)
+	//{
+	//	var parameters = new DialogParameters { ["entry"] = args.Item };
+	//	DialogService.Show<PopupWindow>("Zápis", parameters);
+
+	//}
 
 }

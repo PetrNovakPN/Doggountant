@@ -13,19 +13,17 @@
     <DialogActions>
         <MudButton @onclick="DeleteUser" Variant="Variant.Filled" Color="Color.Error">Odstranit</MudButton>
         <MudButton OnClick="Cancel">Zavřít</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 @code {
     private bool Loading = false;
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
     void Cancel() => MudDialog.Cancel();
 
     [Parameter] public AccountingEntry entry { get; set; } = new AccountingEntry();
 
-    private void DeleteUser()
+    private async void DeleteUser()
     {
         var parameters = new DialogParameters();
         parameters.Add("ContentText", "Do you really want to delete these records? This process cannot be undone.");
@@ -33,7 +31,15 @@
         parameters.Add("Color", Color.Error);
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-        DialogService.Show<PopupDelete>("Delete", parameters, options);
+        var dialog = await DialogService.ShowAsync<PopupDelete>("Delete", parameters, options);
+        var result = await dialog.Result;
+        //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        //var dialog = await DialogService.ShowAsync<PopupDelete>("Delete", parameters);
+        //var result = await dialog.Result;
+        //DialogService.Show<PopupDelete>("Delete", parameters, options);
+        if(!result.Cancelled)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+        }
     }
 }

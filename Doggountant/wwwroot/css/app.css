@@ -67,6 +67,27 @@ a, .btn-link {
     display: none;
 }
 
+.type-column{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    min-width: 94px;
+    width: 10%;
+}
+.date-column{
+    width: 20%;
+}
+.value-column {
+    width: 20%;
+}
+.category-column {
+    width: 20%;
+}
+.note-column {
+    width: 20%;
+}
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
         display: flex;
@@ -78,7 +99,9 @@ a, .btn-link {
         z-index: 1;
     }
 
-	.flex-column, .navbar-brand {
-		padding-left: env(safe-area-inset-left);
-	}
+    .flex-column, .navbar-brand {
+        padding-left: env(safe-area-inset-left);
+    }
+
+    
 }
