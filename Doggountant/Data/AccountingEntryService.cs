@@ -14,7 +14,7 @@ public class AccountingEntryService
 	List<AccountingEntry> Entries = new List<AccountingEntry>() { new AccountingEntry
 		{
 			Date = DateTime.Now,
-			Value = 69,
+			Value = 69.00m,
 			Type = "Jídlo",
 			Note = "temp",
             EntryType = false
@@ -58,7 +58,7 @@ public class AccountingEntryService
 		Entries = JsonSerializer.Deserialize<List<AccountingEntry>>(json);
 	}
 
-	private void SaveIntoFile(List<AccountingEntry> tempEntries)
+	private async Task SaveIntoFile(List<AccountingEntry> tempEntries)
 	{
 		string json = JsonSerializer.Serialize(tempEntries);
 		File.WriteAllText(filePath, json);

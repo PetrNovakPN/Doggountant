@@ -4,6 +4,7 @@
 @using Doggountant.Shared;
 @inject AccountingEntryService AccountingEntryService
 @inject AccountingEntryTypeService AccountingEntryTypeService
+@inject MoneyStatsModel MoneyStatsModel
 
 <h1>Hello, world!</h1>
 
@@ -12,13 +13,75 @@ Welcome to your new app.
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 <MudCard>
-    <MudCardMedia Image="_content/MudBlazor.Docs/images/content-template-door.png" Height="200" />
     <MudCardContent>
-        <MudText Typo="Typo.h5">Old Paint</MudText>
-        <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
-        <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+        <MudStack>
+            <div class="d-flex justify-content-end">
+                <MudRadioGroup @bind-SelectedOption="statsRadioOption">
+                    <MudRadio Option="0" Color="Color.Secondary" Dense="false">Měsíční</MudRadio>
+                    <MudRadio Option="1" Color="Color.Primary" Dense="true">Čtvrtletní</MudRadio>
+                    <MudRadio Option="2" Color="Color.Secondary" Dense="false">Roční</MudRadio>
+                </MudRadioGroup>
+            </div>
+        <MudStack Row="true">
+            <MudCard Outlined="true" Width="50%" Class="pa-4">
+                <MudStack Row="true">
+                    <MudStack>
+                        <MudText Typo="Typo.body2">Stav peněz</MudText>
+                        <MudText Typo="Typo.h5">@totalMoneyStats.totalValue</MudText>
+                        <MudText Typo="Typo.body2">Příjem</MudText>
+                        <MudText Typo="Typo.h5">@totalMoneyStats.incomeValue</MudText>
+                        <MudText Typo="Typo.body2">Výdej</MudText>
+                        <MudText Typo="Typo.h5">@totalMoneyStats.expenseValue</MudText>
+                    </MudStack>
+                    <MudStack>
+                        @*<MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Výdej</MudText>
+                        <MudChart ChartType="ChartType.Pie" InputData="@dataExpense" @bind-SelectedIndex="index" InputLabels="@labels"/>*@
+                    </MudStack>
+                </MudStack>
+            </MudCard>
+
+
+            <MudCard Outlined="true" Width="50%" Class="pa-4">
+                @switch (statsRadioOption)
+                {
+                    case 1:
+                        <MudStack>
+                            <MudText Typo="Typo.body2">Stav peněz</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.totalValue</MudText>
+                            <MudText Typo="Typo.body2">Příjem</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.incomeValue</MudText>
+                            <MudText Typo="Typo.body2">Výdej</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.expenseValue</MudText>
+                        </MudStack>
+                        break;
+                    case 2:
+                        <MudStack>
+                            <MudText Typo="Typo.body2">Stav peněz</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.totalValue</MudText>
+                            <MudText Typo="Typo.body2">Příjem</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.incomeValue</MudText>
+                            <MudText Typo="Typo.body2">Výdej</MudText>
+                            <MudText Typo="Typo.h5">@yearlyMoneyStats.expenseValue</MudText>
+                        </MudStack>
+                        break;
+                    default:
+                        <MudStack>
+                            <MudText Typo="Typo.body2">Stav peněz</MudText>
+                            <MudText Typo="Typo.h5">@monthlyMoneyStats.totalValue</MudText>
+                            <MudText Typo="Typo.body2">Příjem</MudText>
+                            <MudText Typo="Typo.h5">@monthlyMoneyStats.incomeValue</MudText>
+                            <MudText Typo="Typo.body2">Výdej</MudText>
+                            <MudText Typo="Typo.h5">@monthlyMoneyStats.expenseValue</MudText>
+                        </MudStack>
+                        break;
+                }
+                </MudCard>
+            </MudStack>
+        </MudStack>
     </MudCardContent>
 </MudCard>
+
+<MudChart ChartType="ChartType.Pie" InputData="@values" @bind-SelectedIndex="index" InputLabels="@labels2" Width="40%" Height="40%" />
 
 <MudPaper Class="pa-4">
     <div style="display: inline-block left: 50%">
@@ -32,11 +95,20 @@ Welcome to your new app.
 </MudPaper>
 
 @code {
+    //test
+
+
+
+    public int statsRadioOption { get; set; } = 0;
+    DateTime now = DateTime.Now;
+    //working
     private int index = -1; //default value cannot be 0 -> first selectedindex is 0.
     int dataSize = 2;
     double[] dataIncome= { 77, 25 };
     double[] dataExpense = { 77, 25 };
     string[] labels;
+    double[] values = { 77, 25 };
+    string[] labels2;
 
 
 
@@ -45,15 +117,60 @@ Welcome to your new app.
 
     private static List<AccountingEntry> entries = new List<AccountingEntry>();
     private static List<AccountingEntryType> types = new List<AccountingEntryType>();
+    private MoneyStatsModel totalMoneyStats = new MoneyStatsModel();
+    private MoneyStatsModel monthlyMoneyStats = new MoneyStatsModel();
+    private MoneyStatsModel quarterYearlyMoneyStats = new MoneyStatsModel();
+    private MoneyStatsModel yearlyMoneyStats = new MoneyStatsModel();
 
     protected override async Task OnInitializedAsync()
     {
+
+       
+
         entries = AccountingEntryService.GetEntryAsync();
         types = AccountingEntryTypeService.GetTypesAsync();
+        
+        var data = entries.GroupBy(e => e.Type)
+                         .Select(g => new { Type = g.Key, Value = g.Sum(e => e.Value) });
 
+        values = data.Select(d => (double)d.Value).ToArray();
+        labels2 = data.Select(d => d.Type).ToArray();
         //rozdělit labels
         labels = types.Select(e => e.Type).ToArray();
-        
+
+        //total
+        totalMoneyStats.totalValue = entries.Sum(x => (x.EntryType == true) ? x.Value : -x.Value);
+        totalMoneyStats.incomeValue = entries.Where(x => x.EntryType == true).Sum(x => x.Value);
+        totalMoneyStats.expenseValue = entries.Where(x => x.EntryType == false).Sum(x => -x.Value);
+
+        //monthly
+        monthlyMoneyStats.totalValue = entries.Where(x => x.Date.Month == now.Month && x.Date.Year == now.Year).Sum(x => (x.EntryType == true) ? x.Value : -x.Value);
+        monthlyMoneyStats.incomeValue = entries.Where(x => x.EntryType == true && x.Date.Month == now.Month && x.Date.Year == now.Year).Sum(x => x.Value);
+        monthlyMoneyStats.expenseValue = entries.Where(x => x.EntryType == false && x.Date.Month == now.Month && x.Date.Year == now.Year).Sum(x => -x.Value);
+
+        //quarter year
+        int quarter = (now.Month - 1) / 3 + 1; // Calculate the current quarter (1-4)
+
+        DateTime startQuarter = new DateTime(now.Year, 3 * quarter - 2, 1); // Calculate the start of the current quarter
+        DateTime endQuarter = startQuarter.AddMonths(3).AddDays(-1); // Calculate the end of the current quarter
+
+        quarterYearlyMoneyStats.totalValue = entries
+            .Where(x => x.Date >= startQuarter && x.Date <= endQuarter)
+            .Sum(x => (x.EntryType == true) ? x.Value : -x.Value);
+
+        quarterYearlyMoneyStats.incomeValue = entries
+            .Where(x => x.EntryType == true && x.Date >= startQuarter && x.Date <= endQuarter)
+            .Sum(x => -x.Value);
+
+        quarterYearlyMoneyStats.expenseValue = entries
+            .Where(x => x.EntryType == false && x.Date >= startQuarter && x.Date <= endQuarter)
+            .Sum(x => -x.Value);
+
+        //yearly
+        yearlyMoneyStats.totalValue = entries.Where(x => x.Date.Year == now.Year).Sum(x => (x.EntryType == true) ? x.Value : -x.Value);
+        yearlyMoneyStats.incomeValue = entries.Where(x => x.EntryType == true && x.Date.Year == now.Year).Sum(x => x.Value);
+        yearlyMoneyStats.expenseValue = entries.Where(x => x.EntryType == false && x.Date.Year == now.Year).Sum(x => -x.Value);
+
         dataIncome = entries.Where(e => e.EntryType == true)
                     .GroupBy(e => e.Type)
                     .Select(g => g.Sum(e => Convert.ToDouble(e.Value)))
@@ -62,6 +179,5 @@ Welcome to your new app.
                     .GroupBy(e => e.Type)
                     .Select(g => g.Sum(e => Convert.ToDouble(e.Value)))
                     .ToArray();
-
     }
 }

@@ -24,7 +24,8 @@ public static class MauiProgram
 		
 		builder.Services.AddSingleton<AccountingEntryService>();
 		builder.Services.AddSingleton<AccountingEntryTypeService>();
+        builder.Services.AddSingleton<MoneyStatsModel>();
 
-		return builder.Build();
+        return builder.Build();
 	}
 }

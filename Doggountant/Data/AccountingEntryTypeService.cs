@@ -31,13 +31,13 @@ namespace Doggountant.Data
 		public async Task AddTypeAsync(AccountingEntryType tempType)
 		{
 			Types.Add(tempType);
-			SaveIntoFile(Types);
+			await SaveIntoFile(Types);
 		}
 
 		public async Task RemoveTypeAsync(AccountingEntryType tempType)
 		{
 			Types.Remove(Types.FirstOrDefault(e => e.Type == tempType.Type));
-			SaveIntoFile(Types);
+			await SaveIntoFile(Types);
 		}
 		private void ReadFromFile()
 		{
@@ -45,7 +45,7 @@ namespace Doggountant.Data
 			Types = JsonSerializer.Deserialize<List<AccountingEntryType>>(json);
 		}
 
-		private void SaveIntoFile(List<AccountingEntryType> TempTypes)
+		private async Task SaveIntoFile(List<AccountingEntryType> TempTypes)
 		{
 			string json = JsonSerializer.Serialize(TempTypes);
 			File.WriteAllText(filePath, json);

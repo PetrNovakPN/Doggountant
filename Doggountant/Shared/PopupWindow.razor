@@ -16,7 +16,6 @@
     </DialogActions>
 </MudDialog>
 @code {
-    private bool Loading = false;
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
     void Cancel() => MudDialog.Cancel();

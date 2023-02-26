@@ -3,7 +3,7 @@ namespace Doggountant.Data;
 public class AccountingEntry
 {
 
-	public int Value { get; set; }
+	public decimal Value { get; set; }
 
 	public string Type {get; set; }
 
@@ -15,7 +15,7 @@ public class AccountingEntry
 
     public AccountingEntry()
 	{
-		Value = 0;
+		Value = 0.00m;
 		Type = "Jídlo";
 		Date = DateTime.MinValue;
 		Note = "temp";

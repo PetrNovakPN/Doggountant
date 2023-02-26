@@ -130,7 +130,7 @@ else
 	private int currentTypeSelection = 0;
 	public void TypeFilter()
 	{
-		if (currentTypeSelection == 0 ||currentTypeSelection > 2)
+		if (currentTypeSelection == 0 || currentTypeSelection > 2)
 		{
 			currentTypeSelection++;
 		}
@@ -202,7 +202,7 @@ else
 	//working
 	DateTime? SelectedDate = DateTime.Today;
 	public bool Dense_Radio { get; set; } = true;
-	public int Amount { get; set; }
+	public decimal Amount { get; set; }
 	public string TextValueNote { get; set; }
 	public string SelectedValueType { get; set; }
 	public string SelectedValueTypeSearch { get; set; }
