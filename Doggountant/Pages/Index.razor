@@ -22,6 +22,7 @@ Welcome to your new app.
                     <MudRadio Option="2" Color="Color.Secondary" Dense="false">Roční</MudRadio>
                 </MudRadioGroup>
             </div>
+            <MudStack>
         <MudStack Row="true">
             <MudCard Outlined="true" Width="50%" Class="pa-4">
                 <MudStack Row="true">
@@ -76,6 +77,29 @@ Welcome to your new app.
                         break;
                 }
                 </MudCard>
+            </MudStack>
+                <MudStack Row="true">
+                     <MudCard Outlined="true" Width="50%" Class="pa-4">
+                    <MudStack>
+                        <MudText Typo="Typo.body2">Stav peněz</MudText>
+                        <MudText Typo="Typo.h5">@yearlyMoneyStats.totalValue</MudText>
+                        <MudText Typo="Typo.body2">Příjem</MudText>
+                        <MudText Typo="Typo.h5">@yearlyMoneyStats.incomeValue</MudText>
+                        <MudText Typo="Typo.body2">Výdej</MudText>
+                        <MudText Typo="Typo.h5">@yearlyMoneyStats.expenseValue</MudText>
+                    </MudStack>
+                    </MudCard>
+                     <MudCard Outlined="true" Width="50%" Class="pa-4">
+                    <MudStack>
+                        <MudText Typo="Typo.body2">Stav peněz</MudText>
+                        <MudText Typo="Typo.h5">@monthlyMoneyStats.totalValue</MudText>
+                        <MudText Typo="Typo.body2">Příjem</MudText>
+                        <MudText Typo="Typo.h5">@monthlyMoneyStats.incomeValue</MudText>
+                        <MudText Typo="Typo.body2">Výdej</MudText>
+                        <MudText Typo="Typo.h5">@monthlyMoneyStats.expenseValue</MudText>
+                    </MudStack>
+                    </MudCard>
+                </MudStack>
             </MudStack>
         </MudStack>
     </MudCardContent>

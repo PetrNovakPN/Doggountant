@@ -41,15 +41,14 @@ public class AccountingEntryService
 	public async Task AddEntryAsync(AccountingEntry tempEntry)
 	{
 		Entries.Add(tempEntry);
-		SaveIntoFile(Entries);
+		await SaveIntoFile(Entries);
 	}
 
 	public async Task RemoveEntryAsync(AccountingEntry tempEntry)
 	{
-		AccountingEntry entryToRemove = Entries.FirstOrDefault(e => e.Date.Date == tempEntry.Date.Date && e.Note == tempEntry.Note && e.Value == tempEntry.Value && e.Type == tempEntry.Type && e.EntryType == tempEntry.EntryType);
-		if (entryToRemove != null)
-			Entries.Remove(entryToRemove);
-		SaveIntoFile(Entries);
+	
+		Entries.Remove(Entries.FirstOrDefault(e => e.Date.Date == tempEntry.Date.Date && e.Note == tempEntry.Note && e.Value == tempEntry.Value && e.Type == tempEntry.Type && e.EntryType == tempEntry.EntryType));
+		await SaveIntoFile(Entries);
 	}
 
 	private void ReadFromFile()
